@@ -37,8 +37,7 @@ const VerifyOtp = () => {
               height: 45,
               fontWeight: "400px",
               fontSize: "18px",
-              borderRadius: "200px",
-              marginTop: 20,
+              borderRadius: "8px",
             }}
             className="flex items-center justify-center border border-primary bg-primary rounded-lg hover:bg-white text-white hover:text-primary transition"
           >

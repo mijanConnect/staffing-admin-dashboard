@@ -1,4 +1,4 @@
-import { Outlet, useLocation } from 'react-router-dom';
+import { Outlet, useLocation } from "react-router-dom";
 import bgImage from "../../assets/bgImage.png";
 import loginImage from "../../assets/sideimage.png";
 import forgotImage from "../../assets/forgot-img.png";
@@ -23,14 +23,14 @@ const Auth = () => {
 
   return (
     <div
-      className="w-full flex items-center justify-between relative"
+      className="flex justify-center items-center"
       style={{ height: "100vh" }}
     >
       {/* Background image */}
-      <div style={{ backgroundColor: "#ffffff" }}></div>
+      {/* <div style={{ backgroundColor: "#ffffff" }}></div> */}
 
       {/* Left side - Dynamic image */}
-      <div
+      {/* <div
         className="w-1/2 h-full hidden md:flex items-center justify-center"
         style={{
           position: "relative",
@@ -47,10 +47,10 @@ const Auth = () => {
             padding: "20px",
           }}
         />
-      </div>
+      </div> */}
 
       {/* Right side - Auth form */}
-      <div className="md:w-1/2 w-full flex justify-end px-4">
+      <div className="">
         <div
           style={{
             background: "#FCFCFC3B",
@@ -59,9 +59,6 @@ const Auth = () => {
             borderRadius: 15,
             maxWidth: 500,
             width: "100%",
-            position: "relative",
-            right: 100,
-            zIndex: 1,
             border: "1px solid #198248",
             backdropFilter: "blur(10px)",
           }}
@@ -75,4 +72,3 @@ const Auth = () => {
 };
 
 export default Auth;
-

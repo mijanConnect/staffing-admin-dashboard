@@ -17,14 +17,25 @@ const ForgotPassword = () => {
       <img src={keyIcon} alt="KeyIcon" className="mb-[24px] mx-auto" />
       <div className="text-center mb-8">
         <h1 className="text-[25px] font-semibold mb-6">Forgot password?</h1>
-        <p className="w-[90%] mx-auto text-base">
+        <p className="px-8 mx-auto text-base">
           No worries, we’ll send you reset instructions.
         </p>
       </div>
 
       <Form layout="vertical" onFinish={onFinish}>
         <Form.Item
-          label={<p>Email</p>}
+          label={
+            <p
+              style={{
+                display: "block",
+                color: "#5C5C5C",
+              }}
+              htmlFor="email"
+              className="font-semibold "
+            >
+              Email
+            </p>
+          }
           name="email"
           id="email"
           rules={[
@@ -37,12 +48,12 @@ const ForgotPassword = () => {
           <Input
             placeholder="Enter your email address"
             style={{
-              height: 40,
+              height: 45,
               border: "1px solid #d9d9d9",
               outline: "none",
               boxShadow: "none",
-              borderRadius: "200px",
-              borderColor: "#48B14C",
+              borderRadius: "8px",
+              borderColor: "#2C2A5B",
             }}
           />
         </Form.Item>
@@ -54,10 +65,9 @@ const ForgotPassword = () => {
             style={{
               width: "100%",
               height: 45,
-
               fontWeight: "400px",
               fontSize: "18px",
-              borderRadius: "200px",
+              borderRadius: "8px",
               marginTop: 20,
             }}
             className="flex items-center justify-center border border-primary bg-primary rounded-lg hover:bg-white text-white hover:text-primary transition"

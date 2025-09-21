@@ -55,25 +55,59 @@ const Login = () => {
   return (
     <div>
       <div className="text-center mb-8">
-        <img src={image4} alt="logo" className="h-40 w-40 mx-auto" />
+        <img src={image4} alt="logo" className="px-16 mx-auto" />
         {/* <h1 className="text-[25px] font-semibold mb-[10px] mt-[20px]">
           Merchants Dashboard
         </h1> */}
         <p className="mt-6">Welcome back! Please enter your details.</p>
       </div>
       <Form onFinish={onFinish} layout="vertical">
-        <FormItem
-          name={"email"}
-          label={"Email"}
+        <Form.Item
+          name="email"
+          label={
+            <p
+              style={{
+                display: "block",
+                color: "#5C5C5C",
+              }}
+              htmlFor="email"
+              className="font-semibold "
+            >
+              Email
+            </p>
+          }
           rules={[
             { required: true, message: "Please input your Email!" },
             { type: "email", message: "Please enter a valid email!" },
           ]}
-        />
+          className="custom-form-item"
+        >
+          <Input
+            placeholder="Enter your password"
+            style={{
+              height: 50,
+              border: "1px solid #2C2A5B",
+              outline: "none",
+              boxShadow: "none",
+              borderRadius: "8px",
+            }}
+          />
+        </Form.Item>
 
         <Form.Item
           name="password"
-          label={<p>Password</p>}
+          label={
+            <p
+              style={{
+                display: "block",
+                color: "#5C5C5C",
+              }}
+              htmlFor="email"
+              className="font-semibold "
+            >
+              Password
+            </p>
+          }
           rules={[
             {
               required: true,
@@ -85,11 +119,11 @@ const Login = () => {
             type="password"
             placeholder="Enter your password"
             style={{
-              height: 40,
-              border: "1px solid #48B14C",
+              height: 50,
+              border: "1px solid #2C2A5B",
               outline: "none",
               boxShadow: "none",
-              borderRadius: "200px",
+              borderRadius: "8px",
             }}
           />
         </Form.Item>
@@ -125,19 +159,19 @@ const Login = () => {
             type="submit"
             style={{
               width: "100%",
-              height: 45,
+              height: 50,
               fontWeight: "400px",
               fontSize: "18px",
               marginTop: 20,
-              borderRadius: "200px",
+              borderRadius: "8px",
             }}
-            className="flex items-center justify-center border border-primary bg-primary rounded-lg hover:bg-white text-white hover:text-primary transition"
+            className="flex items-center justify-center border border-primary bg-primary hover:bg-white text-white hover:text-primary transition"
           >
             Sign in
           </button>
         </Form.Item>
       </Form>
-      <Form.Item style={{ marginBottom: 0 }}>
+      {/* <Form.Item style={{ marginBottom: 0 }}>
         <button
           htmlType="submit"
           type="submit"
@@ -149,15 +183,15 @@ const Login = () => {
             fontSize: "18px",
             marginTop: 20,
             borderRadius: "200px",
-            border: "1px solid #48B14C",
+            border: "1px solid #2C2A5B",
           }}
           className="flex items-center justify-center rounded-lg"
         >
           <img src={googleIcon} alt="Google logo" className="mr-[12px]" />
           Sign in with Google
         </button>
-      </Form.Item>
-      <div className="mt-[20px]">
+      </Form.Item> */}
+      {/* <div className="mt-[20px]">
         <p className="text-center text-[#1E1E1E]">
           Don't have an account?{" "}
           <a
@@ -167,7 +201,7 @@ const Login = () => {
             Sign Up
           </a>
         </p>
-      </div>
+      </div> */}
     </div>
   );
 };

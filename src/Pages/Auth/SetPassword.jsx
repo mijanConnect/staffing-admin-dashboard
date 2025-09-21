@@ -49,10 +49,10 @@ const SetPassword = () => {
             type="password"
             placeholder="Enter New password"
             style={{
-              border: "1px solid #E0E4EC",
-              height: "52px",
+              border: "1px solid #2C2A5B",
+              height: 45,
               background: "white",
-              borderRadius: "200px",
+              borderRadius: "8px",
               outline: "none",
             }}
             className="mb-6"
@@ -97,10 +97,10 @@ const SetPassword = () => {
             type="password"
             placeholder="Enter Confirm password"
             style={{
-              border: "1px solid #E0E4EC",
-              height: "52px",
+              border: "1px solid #2C2A5B",
+              height: 45,
               background: "white",
-              borderRadius: "200px",
+              borderRadius: "8px",
               outline: "none",
             }}
             className="mb-6"
@@ -116,7 +116,7 @@ const SetPassword = () => {
               height: 45,
               fontWeight: "400px",
               fontSize: "18px",
-              borderRadius: "200px",
+              borderRadius: "8px",
               marginTop: 20,
             }}
             className="flex items-center justify-center border border-primary bg-primary rounded-lg hover:bg-white text-white hover:text-primary transition"
