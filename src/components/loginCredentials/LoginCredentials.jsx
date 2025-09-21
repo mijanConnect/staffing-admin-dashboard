@@ -1,19 +1,7 @@
-import React, { useState } from "react";
-import {
-  Table,
-  Button,
-  Modal,
-  Form,
-  Input,
-  Tooltip,
-  Switch,
-  Select,
-  Row,
-  Col,
-} from "antd";
-import { FaTrash } from "react-icons/fa";
-import { EditOutlined } from "@ant-design/icons";
+import React, { useState, useEffect } from "react";
+import { Table, Button, Form, Input, Select } from "antd";
 import Swal from "sweetalert2";
+import UserModal from "./UserModal";
 
 const { Option } = Select;
 
@@ -48,148 +36,142 @@ const components = {
 };
 
 const LoginCredentials = () => {
-  const [data, setData] = useState([
+  const employeeData = [
     {
       id: 1,
       name: "Alice Johnson",
       email: "alice@email.com",
-      password: "123456",
+      location: "New York",
       phone: "+1234567890",
-      role: "Admin",
-      createdAt: "2025-08-01",
+      joiningDate: "2025-08-01",
+      shiftCompleted: 12,
       status: "Active",
     },
     {
       id: 2,
       name: "John Doe",
       email: "john@email.com",
-      password: "123456",
+      location: "Los Angeles",
       phone: "+9876543210",
-      role: "User",
-      createdAt: "2025-08-05",
+      joiningDate: "2025-08-05",
+      shiftCompleted: 8,
       status: "Inactive",
     },
+  ];
+
+  const clientData = [
     {
-      id: 3,
-      name: "Sophia Williams",
-      email: "sophia@email.com",
-      password: "123456",
-      phone: "+1122334455",
-      role: "Employee",
-      createdAt: "2025-08-08",
-      status: "Active",
-    },
-    {
-      id: 4,
+      id: 1,
       name: "Michael Brown",
-      email: "michael@email.com",
-      password: "123456",
+      email: "michael@client.com",
+      location: "Chicago",
       phone: "+2233445566",
-      role: "User",
-      createdAt: "2025-08-12",
-      status: "Inactive",
-    },
-    {
-      id: 5,
-      name: "Emma Davis",
-      email: "emma@email.com",
-      password: "123456",
-      phone: "+3344556677",
-      role: "Admin",
-      createdAt: "2025-08-15",
+      joiningDate: "2025-09-01",
+      shiftCompleted: 5,
       status: "Active",
     },
-  ]);
+    {
+      id: 2,
+      name: "Emma Davis",
+      email: "emma@client.com",
+      location: "San Francisco",
+      phone: "+3344556677",
+      joiningDate: "2025-09-03",
+      shiftCompleted: 7,
+      status: "Inactive",
+    },
+  ];
 
-  const [roles, setRoles] = useState(["Admin", "User"]); // Default roles
-
-  const [isViewModalVisible, setIsViewModalVisible] = useState(false);
+  const [activeTab, setActiveTab] = useState("Employee");
+  const [data, setData] = useState(employeeData);
+  const [filteredData, setFilteredData] = useState(employeeData);
+  const [roles, setRoles] = useState(["Admin", "User", "Client"]);
+  const [filterStatus, setFilterStatus] = useState("All");
+  const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState(null);
-  const [viewForm] = Form.useForm();
+  const [modalForm] = Form.useForm();
+  const [isEdit, setIsEdit] = useState(false);
   const [searchText, setSearchText] = useState("");
 
-  const [isRoleModalVisible, setIsRoleModalVisible] = useState(false);
-  const [roleForm] = Form.useForm();
-
-  const [isUserModalVisible, setIsUserModalVisible] = useState(false);
-  const [userForm] = Form.useForm();
-
-  // View/Edit User Modal
-  const showViewModal = (record) => {
+  const showModal = (record = null) => {
     setSelectedRecord(record);
-    viewForm.setFieldsValue(record);
-    setIsViewModalVisible(true);
+    setIsEdit(!!record);
+    setIsModalVisible(true);
   };
 
-  const handleCloseViewModal = () => {
-    setIsViewModalVisible(false);
+  const handleCancel = () => {
+    setIsModalVisible(false);
     setSelectedRecord(null);
   };
 
-  const handleUpdateRecord = () => {
-    viewForm.validateFields().then((values) => {
-      setData((prev) =>
-        prev.map((item) =>
-          item.id === selectedRecord.id ? { ...item, ...values } : item
-        )
-      );
-      Swal.fire({
-        title: "Updated!",
-        text: "User details have been updated successfully.",
-        icon: "success",
-        timer: 1500,
-        showConfirmButton: false,
-      });
-      setIsViewModalVisible(false);
+  const handleSave = () => {
+    modalForm.validateFields().then((values) => {
+      if (isEdit) {
+        setData((prev) =>
+          prev.map((item) =>
+            item.id === selectedRecord.id ? { ...item, ...values } : item
+          )
+        );
+        Swal.fire({
+          title: "Updated!",
+          text: "User updated successfully",
+          icon: "success",
+          timer: 1500,
+          showConfirmButton: false,
+        });
+      } else {
+        const newUser = {
+          id: data.length + 1,
+          joiningDate: new Date().toISOString().split("T")[0],
+          shiftCompleted: 0,
+          status: "Active",
+          ...values,
+        };
+        setData((prev) => [...prev, newUser]);
+        Swal.fire({
+          title: "Added!",
+          text: "User added successfully",
+          icon: "success",
+          timer: 1500,
+          showConfirmButton: false,
+        });
+      }
+      modalForm.resetFields();
+      setIsModalVisible(false);
     });
   };
 
-  // Add Role
-  const handleAddRole = () => {
-    roleForm.validateFields().then((values) => {
-      setRoles((prev) => [...prev, values.roleName]);
-      Swal.fire({
-        title: "Role Added!",
-        text: `Role "${values.roleName}" has been successfully added.`,
-        icon: "success",
-        timer: 1500,
-        showConfirmButton: false,
-      });
-      roleForm.resetFields();
-      setIsRoleModalVisible(false);
-    });
+  const toggleTab = (tab) => {
+    setActiveTab(tab);
+    setSelectedRecord(null);
+    setFilterStatus("All");
+    if (tab === "Employee") {
+      setData(employeeData);
+      setFilteredData(employeeData);
+    } else {
+      setData(clientData);
+      setFilteredData(clientData);
+    }
   };
 
-  // Add New User
-  const handleAddUser = () => {
-    userForm.validateFields().then((values) => {
-      const newUser = {
-        id: data.length + 1,
-        status: "Active",
-        createdAt: new Date().toISOString().split("T")[0],
-        ...values,
-      };
-      setData((prev) => [...prev, newUser]);
-      Swal.fire({
-        title: "User Added!",
-        text: `${values.name} has been added successfully.`,
-        icon: "success",
-        timer: 1500,
-        showConfirmButton: false,
-      });
-      userForm.resetFields();
-      setIsUserModalVisible(false);
-    });
+  const handleFilterChange = (value) => {
+    setFilterStatus(value);
   };
+
+  // Update filteredData whenever data or filterStatus changes
+  useEffect(() => {
+    if (filterStatus === "All") setFilteredData(data);
+    else setFilteredData(data.filter((item) => item.status === filterStatus));
+  }, [data, filterStatus]);
 
   const columns = [
     { title: "SL", dataIndex: "id", key: "id", align: "center" },
     { title: "User Name", dataIndex: "name", key: "name", align: "center" },
     { title: "Email", dataIndex: "email", key: "email", align: "center" },
     {
-      title: "Password",
-      dataIndex: "password",
-      key: "password",
+      title: "Location",
+      dataIndex: "location",
+      key: "location",
       align: "center",
     },
     {
@@ -198,11 +180,16 @@ const LoginCredentials = () => {
       key: "phone",
       align: "center",
     },
-    { title: "Role", dataIndex: "role", key: "role", align: "center" },
     {
-      title: "Created At",
-      dataIndex: "createdAt",
-      key: "createdAt",
+      title: "Joining Date",
+      dataIndex: "joiningDate",
+      key: "joiningDate",
+      align: "center",
+    },
+    {
+      title: "Shift Completed",
+      dataIndex: "shiftCompleted",
+      key: "shiftCompleted",
       align: "center",
     },
     { title: "Status", dataIndex: "status", key: "status", align: "center" },
@@ -210,132 +197,106 @@ const LoginCredentials = () => {
       title: "Action",
       key: "action",
       align: "center",
-      width: 120,
+      width: 150,
       render: (_, record) => (
-        <div
-          className="flex gap-4 justify-between align-middle py-[3px] px-[15px] border border-primary rounded-md"
-          style={{ alignItems: "center" }}
-        >
-          <Tooltip title="View & Update Details">
-            <button
-              onClick={() => showViewModal(record)}
-              className="text-primary hover:text-green-700 text-xl"
-            >
-              <EditOutlined />
-            </button>
-          </Tooltip>
-
-          <Tooltip title="Delete">
-            <button
-              onClick={() => {
+        <Button
+          type={record.status === "Active" ? "primary" : "default"}
+          style={{ width: 100 }}
+          onClick={() => {
+            const newStatus =
+              record.status === "Active" ? "Inactive" : "Active";
+            Swal.fire({
+              title: "Are you sure?",
+              text: `Change status to ${newStatus}?`,
+              icon: "warning",
+              showCancelButton: true,
+              confirmButtonColor: "#3085d6",
+              cancelButtonColor: "#d33",
+              confirmButtonText: "Yes",
+            }).then((result) => {
+              if (result.isConfirmed) {
+                setData((prev) =>
+                  prev.map((item) =>
+                    item.id === record.id
+                      ? { ...item, status: newStatus }
+                      : item
+                  )
+                );
                 Swal.fire({
-                  title: "Are you sure?",
-                  text: "You won't be able to revert this!",
-                  icon: "warning",
-                  showCancelButton: true,
-                  confirmButtonColor: "#3085d6",
-                  cancelButtonColor: "#d33",
-                  confirmButtonText: "Yes, delete it!",
-                }).then((result) => {
-                  if (result.isConfirmed) {
-                    setData(data.filter((item) => item.id !== record.id));
-                    Swal.fire({
-                      title: "Deleted!",
-                      text: "Your record has been deleted.",
-                      icon: "success",
-                    });
-                  }
+                  title: "Updated!",
+                  text: `Status changed to ${newStatus}.`,
+                  icon: "success",
+                  timer: 1500,
+                  showConfirmButton: false,
                 });
-              }}
-              className="text-red-500 hover:text-red-700 text-md"
-            >
-              <FaTrash />
-            </button>
-          </Tooltip>
-
-          <Switch
-            size="small"
-            checked={record.status === "Active"}
-            style={{
-              backgroundColor: record.status === "Active" ? "#48B14C" : "gray",
-            }}
-            onChange={(checked) => {
-              Swal.fire({
-                title: "Are you sure?",
-                text: `You are about to change status to ${
-                  checked ? "Active" : "Inactive"
-                }.`,
-                icon: "warning",
-                showCancelButton: true,
-                confirmButtonColor: "#3085d6",
-                cancelButtonColor: "#d33",
-                confirmButtonText: "Yes, change it!",
-              }).then((result) => {
-                if (result.isConfirmed) {
-                  setData((prev) =>
-                    prev.map((item) =>
-                      item.id === record.id
-                        ? { ...item, status: checked ? "Active" : "Inactive" }
-                        : item
-                    )
-                  );
-                  Swal.fire({
-                    title: "Updated!",
-                    text: `Status has been changed to ${
-                      checked ? "Active" : "Inactive"
-                    }.`,
-                    icon: "success",
-                    timer: 1500,
-                    showConfirmButton: false,
-                  });
-                }
-              });
-            }}
-          />
-        </div>
+              }
+            });
+          }}
+        >
+          {record.status === "Active" ? "Active" : "Inactive"}
+        </Button>
       ),
     },
   ];
 
   return (
     <div>
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-0 mb-4">
-        <div>
-          {/* <h1 className="text-[24px] font-bold">User Management</h1>
-          <p className="text-[16px] font-normal mt-2">
-            Access your account securely with your login credentials.
-          </p> */}
-          <div className="!w-[400px]">
-            <Input.Search
-              placeholder="Search"
-              value={searchText}
-              onChange={(e) => setSearchText(e.target.value)}
-              allowClear
-              enterButton
-              className="custom-search"
-            />
-          </div>
-        </div>
-        <div className="flex gap-5">
+      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-2 lg:gap-0 mb-4">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3">
           <Button
             type="primary"
-            onClick={() => setIsUserModalVisible(true)}
-            className="bg-primary !text-white hover:!text-secondary hover:!bg-white hover:!border-primary px-[50px] py-[20px] rounded-lg text-[16px] font-medium"
+            onClick={() => toggleTab("Employee")}
+            className={`px-[50px] py-[20px] rounded-lg text-[16px] font-medium 
+        ${
+          activeTab === "Employee"
+            ? "bg-primary !text-white border-primary"
+            : "bg-white !text-secondary border-primary hover:bg-primary hover:!text-white"
+        }`}
           >
-            Add New User
+            Employee
           </Button>
-          {/* <Button
+
+          <Button
             type="primary"
-            onClick={() => setIsRoleModalVisible(true)}
-            className="bg-primary !text-white hover:!text-secondary hover:!bg-white hover:!border-primary px-[30px] py-[25px] rounded-full text-[18px] font-bold"
+            onClick={() => toggleTab("Client")}
+            className={`px-[50px] py-[20px] rounded-lg text-[16px] font-medium 
+        ${
+          activeTab === "Client"
+            ? "bg-primary !text-white border-primary"
+            : "bg-white !text-secondary border-primary hover:bg-primary hover:!text-white"
+        }`}
           >
-            Add New Role
-          </Button> */}
+            Client
+          </Button>
+
+          {/* Dropdown Filter for both tabs */}
+          <Select
+            value={filterStatus}
+            onChange={handleFilterChange}
+            style={{ width: 150, height: 42 }}
+            className="mt-2 sm:mt-0" // add top margin on small screens
+          >
+            <Option value="All">All</Option>
+            <Option value="Active">Active</Option>
+            <Option value="Inactive">Inactive</Option>
+          </Select>
+        </div>
+
+        <div className="flex flex-col sm:flex-row gap-5 mt-2 lg:mt-0">
+          <Input.Search
+            placeholder="Search"
+            value={searchText}
+            onChange={(e) => setSearchText(e.target.value)}
+            allowClear
+            enterButton
+            className="custom-search !w-full sm:!w-[400px]"
+          />
         </div>
       </div>
+
       <div className="overflow-x-auto">
         <Table
-          dataSource={data}
+          dataSource={filteredData}
           columns={columns}
           pagination={{ pageSize: 10 }}
           bordered={false}
@@ -347,284 +308,15 @@ const LoginCredentials = () => {
         />
       </div>
 
-      {/* View/Edit User Modal */}
-      <Modal
-        visible={isViewModalVisible}
-        onCancel={handleCloseViewModal}
-        width={700}
-        onOk={handleUpdateRecord}
-        okText="Save Changes"
-      >
-        {selectedRecord && (
-          <div className="flex flex-col gap-2 w-full rounded-md mb-8">
-            <p className="text-[22px] font-bold">Edit User</p>
-            <div className="">
-              <Form form={viewForm} layout="vertical" className="mb-4">
-                <Row gutter={[30, 20]}>
-                  <Col xs={24} sm={12}>
-                    <Form.Item
-                      name="name"
-                      label="User Name"
-                      className="custom-form-item-ant"
-                      rules={[
-                        { required: true, message: "Please enter user name" },
-                      ]}
-                    >
-                      <Input
-                        placeholder="Enter User Name"
-                        className="custom-input-ant-modal"
-                      />
-                    </Form.Item>
-                  </Col>
-
-                  <Col xs={24} sm={12}>
-                    <Form.Item
-                      name="email"
-                      label="Email"
-                      className="custom-form-item-ant"
-                      rules={[
-                        { required: true, message: "Please enter email" },
-                        { type: "email", message: "Enter a valid email" },
-                      ]}
-                    >
-                      <Input
-                        placeholder="Enter Email"
-                        className="custom-input-ant-modal"
-                      />
-                    </Form.Item>
-                  </Col>
-
-                  <Col xs={24} sm={12}>
-                    <Form.Item
-                      name="password"
-                      label="Password"
-                      className="custom-form-item-ant"
-                      rules={[
-                        { required: true, message: "Please enter password" },
-                      ]}
-                    >
-                      <Input.Password
-                        placeholder="Enter Password"
-                        className="custom-input-ant-modal"
-                      />
-                    </Form.Item>
-                  </Col>
-
-                  <Col xs={24} sm={12}>
-                    <Form.Item
-                      name="phone"
-                      label="Phone Number"
-                      className="custom-form-item-ant"
-                      rules={[
-                        {
-                          required: true,
-                          message: "Please enter phone number",
-                        },
-                      ]}
-                    >
-                      <Input
-                        placeholder="Enter Phone Number"
-                        className="custom-input-ant-modal"
-                      />
-                    </Form.Item>
-                  </Col>
-
-                  <Col xs={24} sm={12}>
-                    <Form.Item
-                      name="role"
-                      label="Role"
-                      className="custom-form-item-ant-select"
-                      rules={[
-                        { required: true, message: "Please select role" },
-                      ]}
-                    >
-                      <Select
-                        placeholder="Select Role"
-                        className="custom-select-ant-modal"
-                      >
-                        {roles.map((role) => (
-                          <Option key={role} value={role}>
-                            {role}
-                          </Option>
-                        ))}
-                      </Select>
-                    </Form.Item>
-                  </Col>
-
-                  <Col xs={24} sm={12}>
-                    <Form.Item
-                      name="status"
-                      label="Select Page Access Control"
-                      className="custom-form-item-ant-select"
-                      rules={[
-                        {
-                          required: true,
-                          message: "Please select access level",
-                        },
-                      ]}
-                    >
-                      <Select
-                        placeholder="Select Access Level"
-                        className="custom-select-ant-modal"
-                      >
-                        <Option value="Active">Full</Option>
-                        <Option value="Inactive">Dashboard</Option>
-                      </Select>
-                    </Form.Item>
-                  </Col>
-                </Row>
-              </Form>
-            </div>
-          </div>
-        )}
-      </Modal>
-
-      {/* Add New Role Modal */}
-      <Modal
-        title="Add New Role"
-        visible={isRoleModalVisible}
-        onCancel={() => setIsRoleModalVisible(false)}
-        onOk={handleAddRole}
-        okText="Add Role"
-      >
-        <Form form={roleForm} layout="vertical">
-          <Form.Item
-            name="roleName"
-            label="Role Name"
-            rules={[{ required: true, message: "Please enter role name" }]}
-          >
-            <Input placeholder="Enter role name" />
-          </Form.Item>
-          <Form.Item name="status" label="Select Page Access Control">
-            <Select>
-              <Option value="Active">Full</Option>
-              <Option value="Inactive">Dashboard</Option>
-            </Select>
-          </Form.Item>
-        </Form>
-      </Modal>
-
-      {/* Add New User Modal */}
-      <Modal
-        // title="Add New User"
-        visible={isUserModalVisible}
-        onCancel={() => setIsUserModalVisible(false)}
-        onOk={handleAddUser}
-        okText="Add User"
-        width={700}
-      >
-        <div className="flex flex-col gap-2 w-full rounded-md mb-8">
-          <p className="text-[22px] font-bold">Add New User</p>
-          <div>
-            <Form form={userForm} layout="vertical" className="mb-4">
-              <Row gutter={[30, 20]}>
-                <Col xs={24} sm={12}>
-                  <Form.Item
-                    name="name"
-                    label="User Name"
-                    className="custom-form-item-ant"
-                    rules={[
-                      { required: true, message: "Please enter user name" },
-                    ]}
-                  >
-                    <Input
-                      placeholder="Enter User Name"
-                      className="custom-input-ant-modal"
-                    />
-                  </Form.Item>
-                </Col>
-
-                <Col xs={24} sm={12}>
-                  <Form.Item
-                    name="email"
-                    label="Email"
-                    className="custom-form-item-ant"
-                    rules={[
-                      { required: true, message: "Please enter email" },
-                      { type: "email", message: "Enter a valid email" },
-                    ]}
-                  >
-                    <Input
-                      placeholder="Enter Email"
-                      className="custom-input-ant-modal"
-                    />
-                  </Form.Item>
-                </Col>
-
-                <Col xs={24} sm={12}>
-                  <Form.Item
-                    name="password"
-                    label="Password"
-                    className="custom-form-item-ant"
-                    rules={[
-                      { required: true, message: "Please enter password" },
-                    ]}
-                  >
-                    <Input.Password
-                      placeholder="Enter Password"
-                      className="custom-input-ant-modal"
-                    />
-                  </Form.Item>
-                </Col>
-
-                <Col xs={24} sm={12}>
-                  <Form.Item
-                    name="phone"
-                    label="Phone Number"
-                    className="custom-form-item-ant"
-                    rules={[
-                      { required: true, message: "Please enter phone number" },
-                    ]}
-                  >
-                    <Input
-                      placeholder="Enter Phone Number"
-                      className="custom-input-ant-modal"
-                    />
-                  </Form.Item>
-                </Col>
-
-                <Col xs={24} sm={12}>
-                  <Form.Item
-                    name="role"
-                    label="Role"
-                    className="custom-form-item-ant-select"
-                    rules={[
-                      { required: true, message: "Please select a role" },
-                    ]}
-                  >
-                    <Select
-                      placeholder="Select Role"
-                      className="custom-select-ant-modal"
-                    >
-                      {roles.map((role) => (
-                        <Option key={role} value={role}>
-                          {role}
-                        </Option>
-                      ))}
-                    </Select>
-                  </Form.Item>
-                </Col>
-
-                <Col xs={24} sm={12}>
-                  <Form.Item
-                    name="status"
-                    label="Select Page Access Control"
-                    className="custom-form-item-ant-select"
-                  >
-                    <Select
-                      placeholder="Select Access Level"
-                      className="custom-select-ant-modal"
-                    >
-                      <Option value="Active">Full</Option>
-                      <Option value="Inactive">Dashboard</Option>
-                    </Select>
-                  </Form.Item>
-                </Col>
-              </Row>
-            </Form>
-          </div>
-        </div>
-      </Modal>
+      <UserModal
+        visible={isModalVisible}
+        onCancel={handleCancel}
+        onSave={handleSave}
+        form={modalForm}
+        roles={roles}
+        record={selectedRecord}
+        isEdit={isEdit}
+      />
     </div>
   );
 };

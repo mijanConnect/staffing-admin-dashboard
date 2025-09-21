@@ -49,7 +49,7 @@ const Login = () => {
     setUser(foundUser);
 
     // Navigate after login
-    navigate("/submission-management");
+    navigate("/dashboard");
   };
 
   return (

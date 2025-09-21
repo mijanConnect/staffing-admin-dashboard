@@ -70,16 +70,6 @@ const Sidebar = ({ collapsed, setCollapsed, isMobile }) => {
       roles: ["ADMIN"],
     },
     {
-      key: "/submission-management",
-      icon: renderIcon(FileIcon, "/submission-management"),
-      label: (
-        <Link to="/submission-management">
-          {collapsed ? "" : "Submission Management"}
-        </Link>
-      ),
-      roles: ["ADMIN"],
-    },
-    {
       key: "/user-management",
       icon: renderIcon(People, "/user-management"),
       label: (
@@ -88,21 +78,21 @@ const Sidebar = ({ collapsed, setCollapsed, isMobile }) => {
       roles: ["ADMIN"],
     },
     {
-      key: "/upload-documents",
-      icon: renderIcon(UploadIcon, "/upload-documents"),
+      key: "/subscription-management",
+      icon: renderIcon(SubscriptionManagement, "/subscription-management"),
       label: (
-        <Link to="/upload-documents">
-          {collapsed ? "" : "Upload New Documents"}
+        <Link to="/subscription-management">
+          {collapsed ? "" : "Subscription Management"}
         </Link>
       ),
       roles: ["ADMIN"],
     },
     {
-      key: "/category-management",
-      icon: renderIcon(CategoryIcon, "/category-management"),
+      key: "/reports-analytics",
+      icon: renderIcon(CategoryIcon, "/reports-analytics"),
       label: (
-        <Link to="/category-management">
-          {collapsed ? "" : "Category Management"}
+        <Link to="/reports-analytics">
+          {collapsed ? "" : "Reports & Analytics"}
         </Link>
       ),
       roles: ["ADMIN"],
@@ -181,14 +171,14 @@ const Sidebar = ({ collapsed, setCollapsed, isMobile }) => {
       {!collapsed && (
         <Link
           to={"/"}
-          className="logo-container flex items-center justify-center py-4"
+          className="logo-container flex items-center justify-center py-11"
         >
-          <img src={image4} alt="logo" className="w-40 h-40" />
+          <img src={image4} alt="logo" className="w-40 " />
         </Link>
       )}
 
       {/* Menu */}
-      <div className="flex-1 overflow-y-auto mt-6">
+      <div className="flex-1 overflow-y-auto">
         <Menu
           mode="inline"
           inlineCollapsed={collapsed && !isMobile}

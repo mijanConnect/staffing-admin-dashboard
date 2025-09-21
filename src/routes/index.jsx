@@ -58,9 +58,9 @@ const router = createBrowserRouter([
   {
     path: "/",
     element: isLoggedIn() ? (
-      <Navigate to="/submission-management" replace />
+      <Navigate to="/dashboard" replace />
     ) : (
-      <Navigate to="/auth/login" replace />
+      <Navigate to="/dashboard" replace />
     ),
   },
 
@@ -74,14 +74,6 @@ const router = createBrowserRouter([
     ),
     children: [
       {
-        path: "/submission-management",
-        element: (
-          <PrivateRoute allowedRoles={["ADMIN"]}>
-            <SubmissionManagement />
-          </PrivateRoute>
-        ),
-      },
-      {
         path: "/dashboard",
         element: (
           <PrivateRoute allowedRoles={["ADMIN"]}>
@@ -94,6 +86,22 @@ const router = createBrowserRouter([
         element: (
           <PrivateRoute allowedRoles={["ADMIN"]}>
             <LoginCredentials />
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "/subscription-management",
+        element: (
+          <PrivateRoute allowedRoles={["ADMIN"]}>
+            <PackagesPlans />
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "/reports-analytics",
+        element: (
+          <PrivateRoute allowedRoles={["ADMIN"]}>
+            <ReportingAnalytics />
           </PrivateRoute>
         ),
       },
