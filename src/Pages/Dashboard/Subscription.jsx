@@ -279,10 +279,10 @@ const PackagesPlans = () => {
                     </div>
 
                     <Button
-                      className={`w-full mt-12 border ${
+                      className={`w-full mt-12 border h-10 ${
                         pkg.active
                           ? "border-primary hover:!bg-primary hover:!text-white"
-                          : "border-gray-400 text-gray-400 hover:!bg-gray-400 hover:!text-white"
+                          : "border-gray-400 text-white bg-primary hover:!bg-gray-400 hover:!text-white"
                       }`}
                       onClick={() => togglePackageStatus(pkg.id)}
                     >
