@@ -1,22 +1,29 @@
-import React, { useState, useRef } from "react";
-import JoditEditor from "jodit-react";
-import GradientButton from "../../components/common/GradiantButton";
 import { Button, message, Modal } from "antd";
+import JoditEditor from "jodit-react";
+import { useRef, useState } from "react";
 
 const PrivacyPolicy = () => {
   const editor = useRef(null);
 
-  // Using a single state for both content and saved content
-  const [termsContent, setTermsContent] = useState(`
-    <h1><strong>Privacy Policy</strong></h1>
-    <p>Welcome to our website. If you continue to browse and use this website, you are agreeing to comply with and be bound by the following terms and conditions of use.</p> <br />
-    <h3><strong><em>1. General Terms</em></strong></h3>
-    <p>The content of the pages of this website is for your general information and use only. It is subject to change without notice.</p><br />
-    <h3><strong><em>2. Privacy Policy</em></strong></h3>
-    <p>Your use of this website is also subject to our Privacy Policy, which is incorporated by reference.</p><br />
-    <h3><strong><em>3. Disclaimer</em></strong></h3>
-    <p>The information contained in this website is for general information purposes only. We endeavor to keep the information up to date and correct.</p>
-`);
+  // Separate state for Employee and Client Terms & Conditions
+  const [employeeTermsContent, setEmployeeTermsContent] = useState(`
+    <p style="font-size: 16px; color: #555;">Welcome employee! These terms govern your responsibilities and usage while working with us.</p><br />
+    <h3 style="font-size: 20px; font-weight: bold; color: #444;">1. Work Policy</h3>
+    <p style="font-size: 16px; color: #555;">Employees must adhere to company policies and work ethics.</p><br />
+    <h3 style="font-size: 20px; font-weight: bold; color: #444;">2. Confidentiality</h3>
+    <p style="font-size: 16px; color: #555;">Employees are required to keep company data confidential.</p>
+  `);
+
+  const [clientTermsContent, setClientTermsContent] = useState(`
+    <p style="font-size: 16px; color: #555;">Welcome client! These terms govern your relationship and interactions with our services.</p><br />
+    <h3 style="font-size: 20px; font-weight: bold; color: #444;">1. Service Usage</h3>
+    <p style="font-size: 16px; color: #555;">Clients must use the services responsibly and lawfully.</p><br />
+    <h3 style="font-size: 20px; font-weight: bold; color: #444;">2. Payment Policy</h3>
+    <p style="font-size: 16px; color: #555;">All payments must be completed according to the agreed terms.</p>
+  `);
+
+  // Active tab (Employee or Client)
+  const [activeTab, setActiveTab] = useState("Employee");
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -25,36 +32,75 @@ const PrivacyPolicy = () => {
   };
 
   const handleOk = () => {
-    // When saving, just set the content to the saved state
     setIsModalOpen(false);
-    message.success("Terms & Conditions updated successfully!");
+    message.success(`${activeTab} Terms & Conditions updated successfully!`);
   };
 
   const handleCancel = () => {
     setIsModalOpen(false);
   };
 
+  // Pick content based on active tab
+  const currentContent =
+    activeTab === "Employee" ? employeeTermsContent : clientTermsContent;
+  const setCurrentContent =
+    activeTab === "Employee" ? setEmployeeTermsContent : setClientTermsContent;
+
   return (
     <div className="p-4">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-xl font-bold">Privacy Policy</h2>
+      {/* Header with toggle buttons */}
+      <div className="mb-6">
         <Button
-          onClick={showModal}
-          className="bg-primary !text-white hover:!text-secondary hover:!bg-white hover:!border-primary px-[50px] py-[20px] rounded-lg text-[16px] font-medium"
+          type="primary"
+          onClick={() => setActiveTab("Employee")}
+          className={`px-[50px] py-[20px] rounded-lg text-[16px] font-medium mr-4 
+              ${
+                activeTab === "Employee"
+                  ? "bg-primary !text-white border-primary"
+                  : "bg-white !text-secondary border-primary hover:bg-primary hover:!text-white"
+              }`}
         >
-          Update Privacy Policy
+          Employee
+        </Button>
+
+        <Button
+          type="primary"
+          onClick={() => setActiveTab("Client")}
+          className={`px-[50px] py-[20px] rounded-lg text-[16px] font-medium 
+              ${
+                activeTab === "Client"
+                  ? "bg-primary !text-white border-primary"
+                  : "bg-white !text-secondary border-primary hover:bg-primary hover:!text-white"
+              }`}
+        >
+          Client
         </Button>
       </div>
+      <div className="border p-6 rounded-lg">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-[30px] font-bold">Privacy Policy</h2>
+          {/* <div className="flex gap-3">
+          <Button
+            onClick={showModal}
+            className="bg-primary !text-white hover:!text-secondary hover:!bg-white hover:!border-primary px-[50px] py-[20px] rounded-lg text-[16px] font-medium"
+          >
+            Update Privacy Policy
+          </Button>
+        </div> */}
+        </div>
 
-      <div className="saved-content mt-6 border p-6 rounded-lg bg-white">
-        <div
-          dangerouslySetInnerHTML={{ __html: termsContent }}
-          className="prose max-w-none"
-        />
+        {/* Display content */}
+        <div className="saved-content mt-6 bg-white">
+          <div
+            dangerouslySetInnerHTML={{ __html: currentContent }}
+            className="prose max-w-none"
+          />
+        </div>
       </div>
 
+      {/* Modal with editor */}
       <Modal
-        title="Update Privacy Policy"
+        title={`Update ${activeTab} Terms & Conditions`}
         open={isModalOpen}
         onOk={handleOk}
         onCancel={handleCancel}
@@ -80,9 +126,9 @@ const PrivacyPolicy = () => {
           <div className="mb-6">
             <JoditEditor
               ref={editor}
-              value={termsContent}
+              value={currentContent}
               onChange={(newContent) => {
-                setTermsContent(newContent);
+                setCurrentContent(newContent);
               }}
             />
           </div>
